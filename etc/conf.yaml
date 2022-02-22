@@ -1,0 +1,8 @@
+working_dir: /opt/omni-workspace
+debug: True
+user_name: root
+user_passwd: openEuler
+installer_configs: /etc/omni-imager/installer_assets/calamares-configs
+systemd_configs: /etc/omni-imager/installer_assets/systemd-configs
+init_script: /etc/omni-imager/init
+installer_script: /etc/omni-imager/runinstaller
