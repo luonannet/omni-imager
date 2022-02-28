@@ -15,10 +15,10 @@ def prepare_iso_linux(iso_base_dir, rootfs_dir):
     os.system(' '.join(cmd))
 
 
-def make_iso(iso_base, rootfs_dir):
+def make_iso(iso_base, rootfs_dir, image_name):
     prepare_iso_linux(iso_base, rootfs_dir)
     orig_dir = os.getcwd()
     os.chdir(iso_base)
-    cmd = 'mkisofs -R -l -D -o ../openEuler-test.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ./'
+    cmd = "mkisofs -R -l -D -o ../%s -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ./" % image_name
     os.system(cmd)
     os.chdir(orig_dir)
