@@ -48,7 +48,7 @@ def get_decompress_and_install(source_file, dest_root_dir):
 
 
 def install_and_configure_installer(
-        config_options, dest_dir, repo_file, rootfs_repo_dir, verbose=False):
+        config_options, dest_dir, repo_file, rootfs_repo_dir, pkgs, verbose=False):
     """
     Install and configure installer to rootfs, current supported installers:
     calamares
@@ -83,3 +83,10 @@ def install_and_configure_installer(
 
     # TODO: make installer config configurable
     copytree(config_options['installer_configs'], calamares_config_dir)
+
+    # Configure calamares packages plugin to install user specified packages
+    pkg_config_file = calamares_config_dir + 'modules/packages.conf'
+    with open(pkg_config_file, 'a') as output:
+        for line in pkgs:
+            output.write('    - ' + line)
+            output.write('\n')
