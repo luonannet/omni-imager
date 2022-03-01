@@ -11,10 +11,17 @@ Dependencies:
 
 Install：
 
+1. From source:
 ```shell
 git clone https://github.com/omnibuildplatform/omni-imager.git
 cd omni-imager && pip install -r requirements.txt
 python3 setup.py install
+```
+
+2. Using pip(currently you should download the release manually):
+```shell
+wget https://github.com/omnibuildplatform/omni-imager/releases/download/v0.1/omniimager-0.1.0.tar.gz
+pip3 install --prefix / ./omniimager-0.1.0.tar.gz
 ```
 
 Simply run:
