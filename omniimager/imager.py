@@ -5,6 +5,7 @@ import shutil
 import sys
 import time
 import yaml
+import shutil
 
 from omniimager import rootfs_worker
 from omniimager import installer_maker
@@ -40,6 +41,7 @@ INITRD_PKG_LIST = [
     "sg3_utils", "dracut-config-generic", "dracut-network", "rdma-core",
     "selinux-policy-mls", "kernel"
   ]
+REQUIRED_BINARIES = ["createrepo", "dnf", "mkisofs"]
 
 parser = argparse.ArgumentParser(description='clone and manipulate git repositories')
 parser.add_argument('--package-list', metavar='<package_list>',
@@ -51,6 +53,9 @@ parser.add_argument('--config-file', metavar='<config_file>',
 parser.add_argument('--build-type', metavar='<config_file>',
                     dest='build_type', required=True,
                     help='Specify the build type, should be one of: vhd, livecd-iso, installer-iso')
+parser.add_argument('--output-file', metavar='image-name', dest='output_file', const='openEuler-image.iso',
+                    nargs='?', type=str, default="openEuler-image.iso",
+                    help="Specify the name of the build image")
 
 
 def parse_package_list(list_file):
@@ -67,6 +72,9 @@ def parse_package_list(list_file):
 def clean_up_dir(target_dir):
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir)
+
+def binary_exists(name):
+    return False if shutil.which(name) is None else True
 
 
 def prepare_workspace(config_options):
@@ -109,6 +117,11 @@ def main():
     else:
         print('Building:', build_type)
 
+    for command in REQUIRED_BINARIES:
+        if not binary_exists(command):
+            print('binary not found: %s' % command)
+            sys.exit(1)
+
     with open(parsed_args.config_file, 'r') as config_file:
         config_options = yaml.load(config_file, Loader=yaml.SafeLoader)
 
@@ -139,7 +152,7 @@ def main():
         pkg_fetcher.fetch_pkgs(rpms_dir, user_specified_packages, rootfs_dir, verbose=True)
         os.system('createrepo ' + rpms_dir)
 
-    iso_worker.make_iso(iso_base, rootfs_dir)
+    iso_worker.make_iso(iso_base, rootfs_dir, parsed_args.output_file)
 
     print('ISO: openEuler-test.iso generated in:', work_dir)
     end_time = time.time()
