@@ -140,7 +140,7 @@ def main():
 
     if build_type == TYPE_INSTALLER:
         installer_maker.install_and_configure_installer(
-            config_options, rootfs_dir, repo_file, rootfs_repo_dir)
+            config_options, rootfs_dir, repo_file, rootfs_repo_dir, user_specified_packages)
 
     print('Compressing rootfs ...')
     rootfs_worker.compress_to_gz(rootfs_dir, work_dir)
