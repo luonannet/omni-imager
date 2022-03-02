@@ -1,5 +1,6 @@
 import os
 from shutil import copy
+import subprocess
 
 
 def prepare_iso_linux(iso_base_dir, rootfs_dir):
@@ -12,7 +13,7 @@ def prepare_iso_linux(iso_base_dir, rootfs_dir):
     # copy linux kernel to the corresponding folder
     kernel_dir = rootfs_dir + '/boot/vmlinuz-*'
     cmd = ['cp', kernel_dir, iso_base_dir + '/vmlinuz']
-    os.system(' '.join(cmd))
+    subprocess.run(' '.join(cmd), shell=True)
 
 
 def make_iso(iso_base, rootfs_dir, image_name):
@@ -20,5 +21,5 @@ def make_iso(iso_base, rootfs_dir, image_name):
     orig_dir = os.getcwd()
     os.chdir(iso_base)
     cmd = "mkisofs -R -l -D -o ../%s -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table ./" % image_name
-    os.system(cmd)
+    subprocess.run(cmd, shell=True)
     os.chdir(orig_dir)

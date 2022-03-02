@@ -1,5 +1,6 @@
 import os
 from shutil import copy
+import subprocess
 
 
 RPM_INSTALLER = 'dnf'
@@ -11,7 +12,7 @@ def fetch_and_install_pkg(dest_dir, pkg, verbose=False):
     if not verbose:
         cmd.append('-q')
     print('Fetching and Installing:', pkg, '...')
-    os.system(' '.join(cmd))
+    subprocess.run(' '.join(cmd), shell=True)
 
 
 def fetch_and_install_pkgs(dest_dir, pkg_list, repo_file, rootfs_repo_dir, verbose=False):
@@ -36,4 +37,4 @@ def fetch_pkgs(dest_dir, pkg_list, installroot=None, verbose=False):
             cmd.append('--installroot ' + installroot)
         if not verbose:
             cmd.append('-q')
-        os.system(' '.join(cmd))
+        subprocess.run(' '.join(cmd), shell=True)

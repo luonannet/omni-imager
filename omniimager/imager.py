@@ -1,11 +1,12 @@
 import argparse
 import json
 import os
-import shutil
+import subprocess
 import sys
 import time
 import yaml
 import shutil
+import signal
 
 from omniimager import rootfs_worker
 from omniimager import installer_maker
@@ -73,6 +74,7 @@ def clean_up_dir(target_dir):
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir)
 
+
 def binary_exists(name):
     return False if shutil.which(name) is None else True
 
@@ -105,7 +107,13 @@ def prepare_workspace(config_options):
     return rootfs_dir, config_options['working_dir'], iso_base_dir, repo_file, rootfs_repo_dir, verbose
 
 
+def omni_interrupt_handler(signum, frame):
+    print('\nKeyboard Interrupted! Cleaning Up and Exit!')
+    sys.exit(1)
+
+
 def main():
+    signal.signal(signal.SIGINT, omni_interrupt_handler)
     start_time = time.time()
     # parse config options and args
     parsed_args = parser.parse_args()
@@ -150,7 +158,7 @@ def main():
         rpms_dir = iso_base + '/RPMS'
         os.makedirs(rpms_dir)
         pkg_fetcher.fetch_pkgs(rpms_dir, user_specified_packages, rootfs_dir, verbose=True)
-        os.system('createrepo ' + rpms_dir)
+        subprocess.run('createrepo ' + rpms_dir, shell=True)
 
     iso_worker.make_iso(iso_base, rootfs_dir, parsed_args.output_file)
 
