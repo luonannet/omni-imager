@@ -1,5 +1,6 @@
 import os
 from shutil import copy
+import subprocess
 
 from pychroot import Chroot
 
@@ -18,9 +19,9 @@ def prepare_init_script(config_options, dest_dir):
 def config_rootfs(dest_dir):
     with Chroot(dest_dir):
         # TODO: make this configurable
-        os.system('echo "root:openEuler" | chpasswd')
+        subprocess.run('echo "root:openEuler" | chpasswd', shell=True)
         # walk-around to avoid systemd failure
-        os.system("sed -i '/SELINUX/{s/enforcing/disabled/}' /etc/selinux/config")
+        subprocess.run("sed -i '/SELINUX/{s/enforcing/disabled/}' /etc/selinux/config", shell=True)
 
     print('Users and Selinux configuration finished in rootfs.')
 
@@ -29,7 +30,7 @@ def compress_to_gz(dest_dir, work_dir):
     orig_dir = os.getcwd()
     os.chdir(dest_dir)
     # run cpio command to generate rootfs.gz
-    os.system('find . | cpio -R root:root -H newc -o | gzip > ../iso/rootfs.gz')
+    subprocess.run('find . | cpio -R root:root -H newc -o | gzip > ../iso/rootfs.gz', shell=True)
     os.chdir(orig_dir)
     print('Done! rootfs.gz generated at', work_dir + '/iso')
 
@@ -50,29 +51,30 @@ def make_rootfs(dest_dir, pkg_list, config_options,
         # target disk, currently we name it 'basefs' and put it under 'opt' folder of
         # rootfs
         basefs = dest_dir + '/opt/basefs/'
-        os.system('mkdir -p ' + basefs)
+        subprocess.run('mkdir -p ' + basefs, shell=True)
 
         # We need to add a repo file to install 'dnf' in this folder
         # TODO: Refactor Calamares package plugin to install packages using '--installroot' so that
         # we do not need to install it again in basefs.
         basefs_repo_dir = basefs + 'etc/yum.repos.d/'
-        os.system('mkdir -p ' + basefs_repo_dir)
+        subprocess.run('mkdir -p ' + basefs_repo_dir, shell=True)
         pkg_fetcher.fetch_and_install_pkgs(basefs, ['dnf'], repo_file, basefs_repo_dir, verbose)
 
         # Replace openEuler.repo with local.repo, this will be used in the installation phase
-        os.system('rm -f ' + basefs_repo_dir + 'openEuler.repo')
+        subprocess.run('rm -f ' + basefs_repo_dir + 'openEuler.repo', shell=True)
         local_repo = '/etc/omni-imager/local.repo'
         copy(local_repo, basefs_repo_dir)
 
         # If the build type is iso-installer, we should mount cd-rom(/dev/sr0) automatically,
         # add the corresponding line to /etc/fstab
-        os.system("""echo '/dev/sr0  /mnt/cdrom  auto  defaults  0  0' > """ + dest_dir + '/etc/fstab')
+        subprocess.run("""echo '/dev/sr0  /mnt/cdrom  auto  defaults  0  0' > """ + dest_dir + '/etc/fstab',
+                       shell=True)
         # If the build type is iso-installer, we should also do auto login, override the default
         # systemd configuration files
         dest_systemd_dir = dest_dir + '/lib/systemd/system/'
         config_source_dir = config_options['systemd_configs']
-        os.system('rm -f ' + dest_systemd_dir + 'getty@.service')
-        os.system('rm -f ' + dest_systemd_dir + 'serial-getty@.service')
+        subprocess.run('rm -f ' + dest_systemd_dir + 'getty@.service', shell=True)
+        subprocess.run('rm -f ' + dest_systemd_dir + 'serial-getty@.service', shell=True)
         copy(config_source_dir + '/getty@.service', dest_systemd_dir)
         copy(config_source_dir + '/serial-getty@.service', dest_systemd_dir)
 

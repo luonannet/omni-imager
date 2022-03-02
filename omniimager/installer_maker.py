@@ -2,6 +2,7 @@ import os
 import wget
 from shutil import copy
 from shutil import copytree
+import subprocess
 
 from pychroot import Chroot
 
@@ -36,13 +37,13 @@ def get_decompress_and_install(source_file, dest_root_dir):
 
     # Decompress file
     cmd = ['tar', '-xzf', pkg_name]
-    os.system(' '.join(cmd))
+    subprocess.run(' '.join(cmd), shell=True)
 
     # Chroot and install
     with Chroot(dest_root_dir):
         full_name = '/opt/' + pkg_name.split('.')[0] + '-*/build'
         cmd = ['cd', full_name, '&&', 'make', 'install/fast']
-        os.system(' '.join(cmd))
+        subprocess.run(' '.join(cmd), shell=True)
 
     os.chdir(orig_dir)
 
@@ -72,12 +73,12 @@ def install_and_configure_installer(
     find_pattern = '^\(root.*\):[^:]*$'
     replacePattern = '\1:/runinstaller'
     with Chroot(dest_dir):
-        os.system('chmod +x /runinstaller')
-        os.system("sed -i 's|^\(root.*\):[^:]*$|\\1:/runinstaller|' etc/passwd")
+        subprocess.run('chmod +x /runinstaller', shell=True)
+        subprocess.run("sed -i 's|^\(root.*\):[^:]*$|\\1:/runinstaller|' etc/passwd", shell=True)
 
     with Chroot(dest_dir):
-        os.system('mkdir -p /run/user/0')
-        os.system('chmod 700 /run/user/0')
+        subprocess.run('mkdir -p /run/user/0', shell=True)
+        subprocess.run('chmod 700 /run/user/0', shell=True)
 
     calamares_config_dir = dest_dir + '/etc/calamares/'
 
