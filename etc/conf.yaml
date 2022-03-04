@@ -6,3 +6,4 @@ installer_configs: /etc/omni-imager/installer_assets/calamares-configs
 systemd_configs: /etc/omni-imager/installer_assets/systemd-configs
 init_script: /etc/omni-imager/init
 installer_script: /etc/omni-imager/runinstaller
+repo_file: /etc/omni-imager/repos/openEuler2109.repo

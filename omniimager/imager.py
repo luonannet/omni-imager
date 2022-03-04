@@ -92,8 +92,7 @@ def prepare_workspace(config_options):
     rootfs_dir = config_options['working_dir'] + '/' + ROOTFS_DIR
     rootfs_repo_dir = rootfs_dir + '/etc/yum.repos.d'
 
-    # TODO: make this configurable
-    repo_file = '/etc/omni-imager/openEuler.repo'
+    repo_file = config_options['repo_file']
 
     clean_up_dir(rootfs_dir)
     os.makedirs(rootfs_dir)
