@@ -42,6 +42,8 @@ def make_rootfs(dest_dir, pkg_list, config_options,
     if 'filesystem' in pkg_list:
         pkg_fetcher.fetch_and_install_pkgs(dest_dir, ['filesystem'], repo_file, rootfs_repo_dir, verbose)
         pkg_list.remove('filesystem')
+        # Replace openEuler2109.repo because filesystem override it
+        subprocess.run('rm -f ' + rootfs_repo_dir + 'openEuler2109.repo', shell=True)
 
     pkg_fetcher.fetch_and_install_pkgs(dest_dir, pkg_list, repo_file, rootfs_repo_dir, verbose)
     prepare_init_script(config_options, dest_dir)
@@ -60,9 +62,9 @@ def make_rootfs(dest_dir, pkg_list, config_options,
         subprocess.run('mkdir -p ' + basefs_repo_dir, shell=True)
         pkg_fetcher.fetch_and_install_pkgs(basefs, ['dnf'], repo_file, basefs_repo_dir, verbose)
 
-        # Replace openEuler.repo with local.repo, this will be used in the installation phase
-        subprocess.run('rm -f ' + basefs_repo_dir + 'openEuler.repo', shell=True)
-        local_repo = '/etc/omni-imager/local.repo'
+        # Replace openEuler2109.repo with local.repo, this will be used in the installation phase
+        subprocess.run('rm -f ' + basefs_repo_dir + 'openEuler2109.repo', shell=True)
+        local_repo = '/etc/omni-imager/repos/local.repo'
         copy(local_repo, basefs_repo_dir)
 
         # If the build type is iso-installer, we should mount cd-rom(/dev/sr0) automatically,
