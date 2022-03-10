@@ -43,7 +43,7 @@ def make_rootfs(dest_dir, pkg_list, config_options,
         pkg_fetcher.fetch_and_install_pkgs(dest_dir, ['filesystem'], repo_file, rootfs_repo_dir, verbose)
         pkg_list.remove('filesystem')
         # Replace openEuler.repo because filesystem override it
-        subprocess.run('rm -f ' + rootfs_repo_dir + 'openEuler.repo', shell=True)
+        subprocess.run('rm -f ' + rootfs_repo_dir + '/openEuler.repo', shell=True)
 
     pkg_fetcher.fetch_and_install_pkgs(dest_dir, pkg_list, repo_file, rootfs_repo_dir, verbose)
     prepare_init_script(config_options, dest_dir)
@@ -62,8 +62,9 @@ def make_rootfs(dest_dir, pkg_list, config_options,
         subprocess.run('mkdir -p ' + basefs_repo_dir, shell=True)
         pkg_fetcher.fetch_and_install_pkgs(basefs, ['dnf'], repo_file, basefs_repo_dir, verbose)
 
-        # Replace openEuler2109.repo with local.repo, this will be used in the installation phase
-        subprocess.run('rm -f ' + basefs_repo_dir + 'openEuler2109.repo', shell=True)
+        # Replace openEuler.repo with local.repo, because it was override by filesystem
+        # this will be used in the installation phase
+        subprocess.run('rm -f ' + basefs_repo_dir + 'openEuler.repo', shell=True)
         local_repo = '/etc/omni-imager/repos/local.repo'
         copy(local_repo, basefs_repo_dir)
 
