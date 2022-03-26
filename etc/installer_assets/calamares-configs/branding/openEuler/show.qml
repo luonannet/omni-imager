@@ -1,11 +1,19 @@
-/* === This file is part of Calamares - <https://calamares.io> ===
+/* === This file is part of Calamares - <https://github.com/calamares> ===
  *
- *   SPDX-FileCopyrightText: 2015 Teo Mrnjavac <teo@kde.org>
- *   SPDX-FileCopyrightText: 2018 Adriaan de Groot <groot@kde.org>
- *   SPDX-License-Identifier: GPL-3.0-or-later
+ *   Copyright 2015, Teo Mrnjavac <teo@kde.org>
  *
- *   Calamares is Free Software: see the License-Identifier above.
+ *   Calamares is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
+ *   Calamares is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with Calamares. If not, see <http://www.gnu.org/licenses/>.
  */
 
 import QtQuick 2.0;
@@ -14,64 +22,66 @@ import calamares.slideshow 1.0;
 Presentation
 {
     id: presentation
-
-    function nextSlide() {
-        console.log("QML Component (default slideshow) Next slide");
+    
+        function nextSlide() {
         presentation.goToNextSlide();
     }
-
+        
     Timer {
         id: advanceTimer
-        interval: 1000
-        running: presentation.activatedInCalamares
+        interval: 10000
+        running: true
         repeat: true
         onTriggered: nextSlide()
     }
-
+    
     Slide {
+        anchors.fill: parent
 
         Image {
             id: background
-            source: "squid.png"
-            width: 200; height: 200
+            source: "slide1.png"
+            width: 900; height: 600
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: parent
         }
-        Text {
-            anchors.horizontalCenter: background.horizontalCenter
-            anchors.top: background.bottom
-            text: "This is a customizable QML slideshow.<br/>"+
-                  "Distributions should provide their own slideshow and list it in <br/>"+
-                  "their custom branding.desc file.<br/>"+
-                  "To create a Calamares presentation in QML, import calamares.slideshow,<br/>"+
-                  "define a Presentation element with as many Slide elements as needed."
-            wrapMode: Text.WordWrap
-            width: presentation.width
-            horizontalAlignment: Text.Center
+    }
+    
+    Slide {
+        anchors.fill: parent
+
+        Image {
+            id: background1
+            source: "slide2.png"
+            width: 900; height: 600
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: parent
+        }
+    }
+    
+    Slide {
+        anchors.fill: parent
+
+        Image {
+            id: background2
+            source: "slide3.png"
+            width: 900; height: 600
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: parent
+        }
+    }
+    
+        Slide {
+        anchors.fill: parent
+
+        Image {
+            id: background3
+            source: "welcome.png"
+            width: 900; height: 600
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: parent
         }
     }
 
-    Slide {
-        centeredText: qsTr("This is a second Slide element.")
-    }
-
-    Slide {
-        centeredText: qsTr("This is a third Slide element.")
-    }
-
-    // When this slideshow is loaded as a V1 slideshow, only
-    // activatedInCalamares is set, which starts the timer (see above).
-    //
-    // In V2, also the onActivate() and onLeave() methods are called.
-    // These example functions log a message (and re-start the slides
-    // from the first).
-    function onActivate() {
-        console.log("QML Component (default slideshow) activated");
-        presentation.currentSlide = 0;
-    }
-
-    function onLeave() {
-        console.log("QML Component (default slideshow) deactivated");
-    }
-
+    Component.onCompleted: advanceTimer.running = true
 }

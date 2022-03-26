@@ -5,9 +5,9 @@ openEuler ISO image(w/o Calamares GUI installer) from a list with packages.
 ## Usage
 Dependencies: 
 - openEuler distro
-- General: `cpio` `gzip`
+- General: `cpio` `gzip` `tar`
 - Python runtime: `Python 3.8+`
-- rpm packages: `dnf` `dnf-plugins-core` `mkisofs` `genisoimage`
+- rpm packages: `dnf` `dnf-plugins-core` `genisoimage`
 - pypi packages: check `requirements.txt`
 
 Install：
@@ -21,8 +21,8 @@ python3 setup.py install
 
 2. Using pip(currently you should download the release manually):
 ```shell
-wget https://github.com/omnibuildplatform/omni-imager/releases/download/v0.1.2/omniimager-0.1.2.tar.gz
-pip3 install --prefix / ./omniimager-0.1.2.tar.gz
+wget https://github.com/omnibuildplatform/omni-imager/releases/download/v0.1.5/omniimager-0.1.5.tar.gz
+pip3 install --prefix / ./omniimager-0.1.5.tar.gz
 ```
 
 Simply run:
@@ -33,8 +33,8 @@ omni-imager --package-list /etc/omni-imager/openEuler-minimal.json --config-file
 
 ## TODO list
 
-- Hierarchical package list support
-- User specified package list and logos for Calamares
+- User logos/release for Calamares
+- Using cached rootfs
 
 ## Contribute
 
