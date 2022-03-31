@@ -35,6 +35,47 @@ def compress_to_gz(dest_dir, work_dir):
     print('Done! rootfs.gz generated at', work_dir + '/iso')
 
 
+def unzip_rootfs(dest_dir, config_options, repo_file, rootfs_repo_dir, build_type, verbose=False):
+    print('Unzip Rootfs ...')
+    subprocess.run('tar -xzf ' + config_options['cached_rootfs_gz'] + ' -C ' + dest_dir, shell=True)
+    copy(repo_file, rootfs_repo_dir)
+
+    dest_dir = dest_dir + '/rootfs'
+
+    if build_type == imager.TYPE_INSTALLER:
+        # If the build type is iso-installer, we have to prepare a base folder to extract to
+        # target disk, currently we name it 'basefs' and put it under 'opt' folder of
+        # rootfs
+        basefs = dest_dir + '/opt/basefs/'
+        subprocess.run('mkdir -p ' + basefs, shell=True)
+
+        # We need to add a repo file to install 'dnf' in this folder
+        # TODO: Refactor Calamares package plugin to install packages using '--installroot' so that
+        # we do not need to install it again in basefs.
+        basefs_repo_dir = basefs + 'etc/yum.repos.d/'
+        subprocess.run('mkdir -p ' + basefs_repo_dir, shell=True)
+        pkg_fetcher.fetch_and_install_pkgs(basefs, ['dnf'], repo_file, basefs_repo_dir, verbose)
+
+        # Replace openEuler.repo with local.repo, because it was override by filesystem
+        # this will be used in the installation phase
+        subprocess.run('rm -f ' + basefs_repo_dir + 'openEuler.repo', shell=True)
+        local_repo = '/etc/omni-imager/repos/local.repo'
+        copy(local_repo, basefs_repo_dir)
+
+        # If the build type is iso-installer, we should mount cd-rom(/dev/sr0) automatically,
+        # add the corresponding line to /etc/fstab
+        subprocess.run("""echo '/dev/sr0  /mnt/cdrom  auto  defaults  0  0' > """ + dest_dir + '/etc/fstab',
+                       shell=True)
+        # If the build type is iso-installer, we should also do auto login, override the default
+        # systemd configuration files
+        dest_systemd_dir = dest_dir + '/lib/systemd/system/'
+        config_source_dir = config_options['systemd_configs']
+        subprocess.run('rm -f ' + dest_systemd_dir + 'getty@.service', shell=True)
+        subprocess.run('rm -f ' + dest_systemd_dir + 'serial-getty@.service', shell=True)
+        copy(config_source_dir + '/getty@.service', dest_systemd_dir)
+        copy(config_source_dir + '/serial-getty@.service', dest_systemd_dir)
+
+
 def make_rootfs(dest_dir, pkg_list, config_options,
                 repo_file, rootfs_repo_dir, build_type, verbose=False):
     print('Making rootfs ...')
