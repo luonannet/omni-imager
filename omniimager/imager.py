@@ -142,12 +142,17 @@ def main():
         config_options['auto_login'] = True
 
     rootfs_dir, work_dir, iso_base, repo_file, rootfs_repo_dir, verbose = prepare_workspace(config_options)
-    rootfs_worker.make_rootfs(
-        rootfs_dir, packages, config_options, repo_file, rootfs_repo_dir, build_type, verbose)
 
-    if build_type == TYPE_INSTALLER:
-        installer_maker.install_and_configure_installer(
-            config_options, rootfs_dir, repo_file, rootfs_repo_dir, user_specified_packages)
+    use_cached = config_options.get('use_cached_rootfs')
+    if not use_cached:
+        rootfs_worker.make_rootfs(
+            rootfs_dir, packages, config_options, repo_file, rootfs_repo_dir, build_type, verbose)
+
+        if build_type == TYPE_INSTALLER:
+            installer_maker.install_and_configure_installer(
+                config_options, rootfs_dir, repo_file, rootfs_repo_dir, user_specified_packages)
+    else:
+        rootfs_worker.unzip_rootfs(work_dir, config_options, repo_file, rootfs_repo_dir, build_type, verbose)
 
     print('Compressing rootfs ...')
     rootfs_worker.compress_to_gz(rootfs_dir, work_dir)
