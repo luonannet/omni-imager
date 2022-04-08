@@ -10,12 +10,11 @@ from omniimager import pkg_fetcher
 
 
 CALAMARES_DEPENDENCIES = [
-    'boost-python3', 'rsync', 'cmake', 'make qt5',
+    'boost-python3', 'rsync', 'make', 'qt5',
     'polkit-qt5-1-devel', 'extra-cmake-modules',
     'qt5-qtsvg-devel', 'qt5-qtquickcontrols2-devel',
-    'kf5-kcoreaddons-devel', 'xorg-x11-server',
-    'xorg-x11-drv-fbdev', 'xorg-x11-server',
-    'xorg-x11-drivers', 'kf5-kservice-devel',
+    'kf5-kcoreaddons-devel', 'xorg-x11-drv-fbdev',
+    'xorg-x11-server', 'xorg-x11-drivers', 'kf5-kservice-devel',
     'openssl-devel', 'libgcrypt-devel', 'yaml-cpp-devel',
     'libatasmart-devel', 'kf5-kwidgetsaddons-devel'
 ]
