@@ -21,8 +21,8 @@ python3 setup.py install
 
 2. Using pip(currently you should download the release manually):
 ```shell
-wget https://github.com/omnibuildplatform/omni-imager/releases/download/v0.2.1/omniimager-0.2.1.tar.gz
-pip3 install --prefix / ./omniimager-0.2.1.tar.gz
+wget https://github.com/omnibuildplatform/omni-imager/releases/download/v0.2.2/omniimager-0.2.2.tar.gz
+pip3 install --prefix / ./omniimager-0.2.2.tar.gz
 ```
 
 Simply run:
